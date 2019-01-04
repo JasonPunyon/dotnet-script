@@ -7,10 +7,13 @@ namespace Dotnet.Script.Core
     public class ScriptConsole
     {
         public static readonly ScriptConsole Default = new ScriptConsole(Console.Out, null, Console.Error);
+        public static readonly ScriptConsole InputRedirected = new ScriptConsole(Console.Out, Console.In, Console.Error);
 
         public virtual TextWriter Error { get; }
         public virtual TextWriter Out { get; }
         public virtual TextReader In { get; }
+
+        public static bool StandardInIsRedirected = Console.IsInputRedirected;
 
         public virtual void Clear() => Console.Clear();
 

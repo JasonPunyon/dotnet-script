@@ -236,11 +236,13 @@ namespace Dotnet.Script
         private static async Task<int> RunInteractive(bool useRestoreCache, LogFactory logFactory, string[] packageSources)
         {
             var options = new ExecuteInteractiveCommandOptions(null, Array.Empty<string>(), packageSources);
-            await new ExecuteInteractiveCommand(ScriptConsole.Default, logFactory).Execute(options);
+            var console = Console.IsInputRedirected ? ScriptConsole.InputRedirected : ScriptConsole.Default;
+
+            await new ExecuteInteractiveCommand(console, logFactory).Execute(options);
             return 0;
         }
 
-        private async static Task<int> RunInteractiveWithSeed(string file, LogFactory logFactory, string[] arguments, string[] packageSources)
+        private static async Task<int> RunInteractiveWithSeed(string file, LogFactory logFactory, string[] arguments, string[] packageSources)
         {
             var options = new ExecuteInteractiveCommandOptions(new ScriptFile(file), arguments, packageSources);
             await new ExecuteInteractiveCommand(ScriptConsole.Default, logFactory).Execute(options);

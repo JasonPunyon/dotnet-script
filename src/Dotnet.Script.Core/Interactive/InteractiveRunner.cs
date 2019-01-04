@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dotnet.Script.DependencyModel.Context;
 using Dotnet.Script.DependencyModel.Logging;
@@ -44,7 +45,11 @@ namespace Dotnet.Script.Core
         {
             while (!_shouldExit)
             {
-                Console.Out.Write("> ");
+                if (!ScriptConsole.StandardInIsRedirected)
+                {
+                    Console.Out.Write("> ");
+                }
+
                 var input = ReadInput();
 
                 if (InteractiveCommandParser.TryProvideCommand(input, out var command))
@@ -127,12 +132,21 @@ namespace Dotnet.Script.Core
             while (true)
             {
                 var line = Console.ReadLine();
+                if (line == null)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+
                 input.AppendLine(line);
 
                 var syntaxTree = SyntaxFactory.ParseSyntaxTree(input.ToString(), ParseOptions);
                 if (!SyntaxFactory.IsCompleteSubmission(syntaxTree))
                 {
-                    Console.Out.Write("* ");
+                    if (!ScriptConsole.StandardInIsRedirected)
+                    {
+                        Console.Out.Write("* ");
+                    }
                 }
                 else
                 {
